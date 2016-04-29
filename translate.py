@@ -62,7 +62,7 @@ tf.app.flags.DEFINE_string("data_dir", "data", "Data directory")
 tf.app.flags.DEFINE_string("train_dir", "train", "Training directory.")
 tf.app.flags.DEFINE_integer("max_train_data_size", 0,
                             "Limit on the size of training data (0: no limit).")
-tf.app.flags.DEFINE_integer("steps_per_checkpoint", 10,
+tf.app.flags.DEFINE_integer("steps_per_checkpoint", 1000,
                             "How many training steps to do per checkpoint.")
 tf.app.flags.DEFINE_boolean("decode", False,
                             "Set to True for interactive decoding.")
@@ -187,8 +187,11 @@ def train():
       step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
       loss += step_loss / FLAGS.steps_per_checkpoint
       current_step += 1
-      print('.',end='')
-      sys.stdout.flush()
+
+      if ( (FLAGS.steps_per_checkpoint < 100) or
+           (current_step % int(FLAGS.steps_per_checkpoint/100)) == 0):
+        print('.',end='')
+        sys.stdout.flush()
 
       # Once in a while, we save checkpoint, print statistics, and run evals.
       if current_step % FLAGS.steps_per_checkpoint == 0:
@@ -215,7 +218,7 @@ def train():
             cnts += len(dev_set[bucket_id])
             accum += len(dev_set[bucket_id])*eval_ppx
         mean_eval_ppx = accum / cnts
-        print("global step %d learning rate %.4f step-time %.2f perplexity "
+        print("\nGlobal step %d learning rate %.4f step-time %.2f perplexity "
               "%.2f %.2f"%(model.global_step.eval(), model.learning_rate.eval(), 
                            step_time, perplexity,mean_eval_ppx))
         sys.stdout.flush()
