@@ -28,13 +28,13 @@ from six.moves import urllib
 
 # Special vocabulary symbols - we always put them at the start.
 _PAD = "_PAD"
-_GO = "_GO"
+_GO  = "_GO"
 _EOS = "_EOS"
 _UNK = "_UNK"
 _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
 
 PAD_ID = 0
-GO_ID = 1
+GO_ID  = 1
 EOS_ID = 2
 UNK_ID = 3
 
@@ -103,10 +103,11 @@ def get_wmt_enfr_dev_set(directory):
 
 def basic_tokenizer(sentence):
   """Very basic tokenizer: split the sentence into a list of tokens."""
-  words = []
-  for space_separated_fragment in sentence.strip().split():
-    words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
-  return [w for w in words if w]
+  text = sentence.replace("\n"," ")
+  text = re.sub(' +',' ',text)
+  text = text.strip()
+  chars = list(text)
+  return chars
 
 
 def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
@@ -150,7 +151,6 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
       with gfile.GFile(vocabulary_path, mode="w") as vocab_file:
         for w in vocab_list:
           vocab_file.write(w + "\n")
-
 
 def initialize_vocabulary(vocabulary_path):
   """Initialize vocabulary from file.
@@ -201,13 +201,13 @@ def sentence_to_token_ids(sentence, vocabulary,
     a list of integers, the token-ids for the sentence.
   """
   if tokenizer:
-    words = tokenizer(sentence)
+    chars = tokenizer(sentence)
   else:
-    words = basic_tokenizer(sentence)
+    chars = basic_tokenizer(sentence)
   if not normalize_digits:
-    return [vocabulary.get(w, UNK_ID) for w in words]
-  # Normalize digits by 0 before looking words up in the vocabulary.
-  return [vocabulary.get(re.sub(_DIGIT_RE, "0", w), UNK_ID) for w in words]
+    return [vocabulary.get(w, UNK_ID) for w in chars]
+  # Normalize digits by 0 before looking chars up in the vocabulary.
+  return [vocabulary.get(re.sub(_DIGIT_RE, "0", w), UNK_ID) for w in chars]
 
 
 def data_to_token_ids(data_path, target_path, vocabulary_path,
