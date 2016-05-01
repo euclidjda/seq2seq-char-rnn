@@ -175,7 +175,7 @@ def initialize_vocabulary(vocabulary_path):
     rev_vocab = []
     with gfile.GFile(vocabulary_path, mode="r") as f:
       rev_vocab.extend(f.readlines())
-    rev_vocab = [line.strip() for line in rev_vocab]
+    rev_vocab = [line.rstrip('\n') for line in rev_vocab]
     vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
     return vocab, rev_vocab
   else:
@@ -204,6 +204,8 @@ def sentence_to_token_ids(sentence, vocabulary,
     chars = tokenizer(sentence)
   else:
     chars = basic_tokenizer(sentence)
+  #print("space id = %d" % vocabulary.get(" ", UNK_ID) )
+  #exit()
   if not normalize_digits:
     return [vocabulary.get(w, UNK_ID) for w in chars]
   # Normalize digits by 0 before looking chars up in the vocabulary.

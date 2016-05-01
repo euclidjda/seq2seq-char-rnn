@@ -173,8 +173,9 @@ class Seq2SeqModel(object):
       self.gradient_norms = []
       self.updates = []
       opt = tf.train.GradientDescentOptimizer(self.learning_rate)
+      am  = 2 # tf.gradients.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N
       for b in xrange(len(buckets)):
-        gradients = tf.gradients(self.losses[b], params)
+        gradients = tf.gradients(self.losses[b], params,aggregation_method=am)
         clipped_gradients, norm = tf.clip_by_global_norm(gradients,
                                                          max_gradient_norm)
         self.gradient_norms.append(norm)
@@ -272,7 +273,7 @@ class Seq2SeqModel(object):
       # Encoder inputs are padded and then reversed.
       encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
       # Removed reversal b/c we think not relevant for this task
-      #encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
+      encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
       encoder_inputs.append(list(encoder_input + encoder_pad))
 
       # Decoder inputs get an extra "GO" symbol, and are padded then.

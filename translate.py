@@ -54,10 +54,10 @@ tf.app.flags.DEFINE_float("max_gradient_norm", 5.0,
                           "Clip gradients to this norm.")
 tf.app.flags.DEFINE_integer("batch_size", 64,
                             "Batch size to use during training.")
-tf.app.flags.DEFINE_integer("size", 64, "Size of each model layer.")
-tf.app.flags.DEFINE_integer("num_layers", 2, "Number of layers in the model.")
-tf.app.flags.DEFINE_integer("en_vocab_size", 100, "English vocabulary size.")
-tf.app.flags.DEFINE_integer("fr_vocab_size", 100, "French vocabulary size.")
+tf.app.flags.DEFINE_integer("size", 512, "Size of each model layer.")
+tf.app.flags.DEFINE_integer("num_layers", 3, "Number of layers in the model.")
+tf.app.flags.DEFINE_integer("en_vocab_size", 71, "English vocabulary size.")
+tf.app.flags.DEFINE_integer("fr_vocab_size", 71, "French vocabulary size.")
 tf.app.flags.DEFINE_string("data_dir", "data", "Data directory")
 tf.app.flags.DEFINE_string("train_dir", "train", "Training directory.")
 tf.app.flags.DEFINE_integer("max_train_data_size", 0,
@@ -225,6 +225,7 @@ def train():
         step_time, loss = 0.0, 0.0
 
 def decode():
+  #config = tf.ConfigProto( device_count={'GPU':0} )
   with tf.Session() as sess:
     # Create model and load parameters.
     model = create_model(sess, True)
@@ -250,10 +251,10 @@ def decode():
                        if _buckets[b][0] > len(token_ids)])
       # Get a 1-element batch to feed the sentence to the model.
       encoder_inputs, decoder_inputs, target_weights = model.get_batch(
-          {bucket_id: [(token_ids, [])]}, bucket_id)
+        {bucket_id: [(token_ids, [])]}, bucket_id)
       # Get output logits for the sentence.
       _, _, output_logits = model.step(sess, encoder_inputs, decoder_inputs,
-                                       target_weights, bucket_id, True)
+                                         target_weights, bucket_id, True)
       # This is a greedy decoder - outputs are just argmaxes of output_logits.
       outputs = [int(np.argmax(logit, axis=1)) for logit in output_logits]
       # If there is an EOS symbol in outputs, cut them at that point.
