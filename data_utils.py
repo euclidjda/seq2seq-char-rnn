@@ -242,7 +242,6 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
                                             normalize_digits)
           tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
 
-
 def prepare_wmt_data(data_dir, en_vocabulary_size, fr_vocabulary_size):
   """Get WMT data into data_dir, create vocabularies and tokenize data.
 

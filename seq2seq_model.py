@@ -10,7 +10,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations under the License
 # ==============================================================================
 
 """Sequence-to-sequence model with an attention mechanism."""
@@ -272,9 +272,8 @@ class Seq2SeqModel(object):
 
       # Encoder inputs are padded and then reversed.
       encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
-      # Removed reversal b/c we think not relevant for this task
+      #encoder_inputs.append(list(encoder_input + encoder_pad))
       encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
-      encoder_inputs.append(list(encoder_input + encoder_pad))
 
       # Decoder inputs get an extra "GO" symbol, and are padded then.
       decoder_pad_size = decoder_size - len(decoder_input) - 1

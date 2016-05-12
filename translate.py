@@ -47,7 +47,7 @@ import seq2seq_model
 from tensorflow.python.platform import gfile
 
 tf.app.flags.DEFINE_float("learning_rate", 0.5, "Learning rate.")
-tf.app.flags.DEFINE_float("keep_prob", 0.25, "Learning dropout rate.")
+tf.app.flags.DEFINE_float("keep_prob", 0.5, "Learning dropout rate.")
 tf.app.flags.DEFINE_float("learning_rate_decay_factor", 0.99,
                           "Learning rate decays by this much.")
 tf.app.flags.DEFINE_float("max_gradient_norm", 5.0,
@@ -225,8 +225,8 @@ def train():
         step_time, loss = 0.0, 0.0
 
 def decode():
-  #config = tf.ConfigProto( device_count={'GPU':0} )
-  with tf.Session() as sess:
+  config = tf.ConfigProto( device_count={'GPU':0} )
+  with tf.Session(config=config) as sess:
     # Create model and load parameters.
     model = create_model(sess, True)
     model.batch_size = 1  # We decode one sentence at a time.
